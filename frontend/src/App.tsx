@@ -1,11 +1,13 @@
 // App.tsx
 import React, { useState } from "react";
 import "./App.css";
+import { Provider } from "jotai";
 import ChatInterface from "./components/ChatInterface";
 import Terminal from "./components/Terminal";
 import Planner from "./components/Planner";
 import CodeEditor from "./components/CodeEditor";
 import Browser from "./components/Browser";
+import { store } from "./store";
 
 const TAB_OPTIONS = ["terminal", "planner", "code", "browser"] as const;
 type TabOption = (typeof TAB_OPTIONS)[number];
@@ -25,12 +27,6 @@ function Tab({ name, active, onClick }: TabProps): JSX.Element {
 
 function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState<TabOption>("terminal");
-  // URL of browser window (placeholder for now, will be replaced with the actual URL later)
-  const [url] = useState("https://github.com/OpenDevin/OpenDevin");
-  // Base64-encoded screenshot of browser window (placeholder for now, will be replaced with the actual screenshot later)
-  const [screenshotSrc] = useState(
-    "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN0uGvyHwAFCAJS091fQwAAAABJRU5ErkJggg==",
-  );
 
   const tabData = {
     terminal: {
@@ -47,29 +43,31 @@ function App(): JSX.Element {
     },
     browser: {
       name: "Browser",
-      component: <Browser url={url} screenshotSrc={screenshotSrc} />,
+      component: <Browser />,
     },
   };
 
   return (
-    <div className="app">
-      <div className="left-pane">
-        <ChatInterface />
-      </div>
-      <div className="right-pane">
-        <div className="tab-container">
-          {TAB_OPTIONS.map((tab) => (
-            <Tab
-              key={tab}
-              name={tabData[tab].name}
-              active={activeTab === tab}
-              onClick={() => setActiveTab(tab)}
-            />
-          ))}
+    <Provider store={store}>
+      <div className="app">
+        <div className="left-pane">
+          <ChatInterface />
         </div>
-        <div className="tab-content">{tabData[activeTab].component}</div>
+        <div className="right-pane">
+          <div className="tab-container">
+            {TAB_OPTIONS.map((tab) => (
+              <Tab
+                key={tab}
+                name={tabData[tab].name}
+                active={activeTab === tab}
+                onClick={() => setActiveTab(tab)}
+              />
+            ))}
+          </div>
+          <div className="tab-content">{tabData[activeTab].component}</div>
+        </div>
       </div>
-    </div>
+    </Provider>
   );
 }
 

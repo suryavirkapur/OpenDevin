@@ -1,28 +1,18 @@
 import React from "react";
 import "./Browser.css";
+import { useAtomValue } from "jotai";
+import { browserState } from "../store";
 
-type UrlBarProps = {
-  url: string;
-};
-
-function UrlBar({ url }: UrlBarProps): JSX.Element {
+function UrlBar({ url }: { url: string }): JSX.Element {
   return <div className="url">{url}</div>;
 }
 
-type ScreenshotProps = {
-  src: string;
-};
-
-function Screenshot({ src }: ScreenshotProps): JSX.Element {
+function Screenshot({ src }: { src: string }): JSX.Element {
   return <img className="screenshot" src={src} alt="screenshot" />;
 }
 
-type BrowserProps = {
-  url: string;
-  screenshotSrc: string;
-};
-
-function Browser({ url, screenshotSrc }: BrowserProps): JSX.Element {
+function Browser(): JSX.Element {
+  const { url, screenshotSrc } = useAtomValue(browserState);
   return (
     <div className="browser">
       <UrlBar url={url} />
